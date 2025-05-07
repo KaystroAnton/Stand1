@@ -75,6 +75,7 @@ if flag == "Simulation":
                 reflogAngel[itter] = refAngel
             except:
                 print("no aruco " )
+                break
             try:
                 print(det[1][0], "robot angel ", float(det[2][0]))
                 print(fromvVectorToAngel([targetPosition[0] - det[1][0][0], targetPosition[1] - det[1][0][1]]))
