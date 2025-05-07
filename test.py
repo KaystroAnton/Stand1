@@ -3,10 +3,10 @@ import os
 import cv2 as cv
 
 import CameraSetUp
-from help import positionControl, simPositionControl,posControler, fromvVectorToAngel,posAndOrientControl,fromAngelToVector,angle180
+from help import positionControl, simPositionControl,posControler, fromvVectorToAngel,posAndOrientControl,fromAngelToVector,angle180,orientControlSetedLinSpeed
 import numpy as np
 import matplotlib.pyplot as plt
-control ="posAndOrientControl"
+control ="orientControlSetedLinSpeed"
 flag = "Simulation" # Real or Simulation
 #flag = "Real"
 dt = 1/240
@@ -57,7 +57,7 @@ if flag == "Simulation":
             det = stand.detectAruco(image)
             #
             cv.circle(det[0], (targetPosition[0], imgSide - targetPosition[1]), 4, (0, 0, 255), -1)
-            if control == "posAndOrientControl":
+            if control == "orientControlSetedLinSpeed":
                 vec = fromAngelToVector(refAngel)
                 cv.line(det[0], [targetPosition[0], imgSide - targetPosition[1]],
                         [targetPosition[0] + int(vec[0] * 10), imgSide - targetPosition[1] - int(vec[1] * 10)],
@@ -66,7 +66,7 @@ if flag == "Simulation":
             if cv.waitKey(1) == ord('q'):
                 break
             try:
-                flag = posAndOrientControl([targetPosition[0], targetPosition[1]],refAngel, det[1][0], angle180(det[2][0]))
+                flag = orientControlSetedLinSpeed(angle180(det[2][0]),refAngel)
                 print("control lw- ", flag[0][0], "rw-",flag[0][1])
                 stand.setControl([flag[0]])
                 logPosX[itter] = det[1][0][0]

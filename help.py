@@ -115,7 +115,7 @@ def posControler(refPosition,robotPosision,roborOriantation):
     else:
         return [[0,0], True]
 
-def orientControlSetedLinSpeed(robotOrientation, refOrientation,linspeed = 40,L=2,kProp = 0.8):
+def orientControlSetedLinSpeed(robotOrientation, refOrientation,linspeed = 70,L=2,kProp = 0.8):
     turn = (angle180(refOrientation - robotOrientation) * 2 / L % linspeed)
     motorL =  kProp * (linspeed - turn)
     motorR =  kProp * (linspeed + turn)
