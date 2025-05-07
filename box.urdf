@@ -1,0 +1,34 @@
+<robot name="2wheeledRobot">
+
+<material name="black">
+    <color rgba="0 0 0 1"/>
+</material>
+
+<material name="white">
+    <color rgba="1 1 1 1"/>
+</material>
+
+<material name="gray">
+    <color rgba="0.4 0.4 0.4 1"/>
+</material>
+
+<link name="corpus">
+         <inertial>
+            <mass value="1"/>
+            <inertia ixx="0"  ixy="0"  ixz="0" iyy="0" iyz="0" izz="0" />
+         </inertial>
+         <visual>
+            <geometry>
+                <box size=".2 .2 .2"/>
+            </geometry>
+            <origin xyz="0.0 0.0 0" rpy="0 0 0" />
+            <material name="gray"/>
+         </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+	 	<box size="0.1 0.1 0.2"/>
+      </geometry>
+    </collision>
+</link>
+</robot>

@@ -1,0 +1,26 @@
+<robot name="plane">
+
+    <material name="white">
+        <color rgba="1 1 1 1"/>
+    </material>
+
+    <link name="field">
+        <visual>
+            <geometry>
+                <box size="4.0 4.0 0"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="2 2 0"/>
+            <material name="white"/>
+        </visual>
+        <inertial>
+            <mass value="0"/>
+            <inertia ixx="0"  ixy="0"  ixz="0" iyy="0" iyz="0" izz="0" />
+        </inertial>
+        <collision>
+            <origin rpy="0 0 0" xyz="2.0 2.0 0"/>
+            <geometry>
+                <box size="4.0 4.0 0"/>
+            </geometry>
+        </collision>
+    </link>
+</robot>
