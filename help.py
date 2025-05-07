@@ -119,7 +119,7 @@ def orientControlSetedLinSpeed(robotOrientation, refOrientation,linspeed = 70,L=
     turn = (angle180(refOrientation - robotOrientation) * 2 / L % linspeed)
     motorL =  kProp * (linspeed - turn)
     motorR =  kProp * (linspeed + turn)
-    return [motorL,motorR]
+    return [[motorL,motorR],False]
 
 def posAndOrientControl(refPosition,refOrientation,robotPosision,robotOriantation):
     betta = angle180(fromvVectorToAngel([refPosition[0] - robotPosision[0],refPosition[1] - robotPosision[1]]))
