@@ -5,6 +5,7 @@ import CameraSetUp as Cam
 import ArucoDetectorSetUp as Detector
 import help
 from help import fromvVectorToAngel
+import time
 # for more info about function print(name_of_the_class_instance.function_name.__doc__)
 class Stand:
     'Creat a stand'
@@ -129,6 +130,7 @@ class RealCamera:
         "Starts recording the camera"
         #deviceIndex - argument can be either the device index or the name of a video file
         self.cap =cv.VideoCapture(deviceIndex)
+        self.shape = self.cap.read()[1].shape
 
     def calibrateCamera(self,calibratePathFolder = 'C:\PythonProjects\RoboFoot\RoboFoot\calibrateimages', numberofImages = 10, boardSize = (6,9)):  # get camera parameters
         'calibrate camera,takes a set number of images from a folder located on the specified path'
@@ -181,7 +183,10 @@ class RealCamera:
     def detectAruco(self,frame = None,calibrateParam = None,detector= Detector.detector):
         'Detect aruco markers in a given image, if calibrateParam has been set, removes distortion from the image before detection.'
         if self.cap.read()[0] & (frame == None):
+            t0 = time.time()
             frame = self.cap.read()[1]
+            t1 = time.time()
+            print("time for reading frame - ",t1-t0," start reading time - ",t0," end reading time - ",t1)
         if calibrateParam != None:
             calibratedFrame = self.calibrateFrame(frame, calibrateParam)
         else:
