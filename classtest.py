@@ -223,12 +223,12 @@ class RealCamera:
                 center_x = int((top_left[0] + bottom_right[0]) / 2.0)
                 center_y = int((top_left[1] + bottom_right[1]) / 2.0)
                 cv.circle(calibratedFrame, (center_x, center_y), 4, (0, 0, 255), -1)
-                centers.append([center_x,center_y])
+                centers.append([center_x,frame.shape[0] -center_y])
                 cv.line(calibratedFrame, [center_x, center_y], [int(top_left[0] + (top_right[0] - top_left[0]) / 2.0),
                                                          int(top_left[1] + (top_right[1] - top_left[1]) / 2.0)],(0, 255, 0), 2)
 
                 # Calculate vector of the robot
-                angels.append(fromvVectorToAngel([top_left[0] + (top_right[0] - top_left[0])/2.0 -center_x, top_left[1] + (top_right[1] - top_left[1])/2.0 -center_y]))
+                angels.append(fromvVectorToAngel([top_left[0] + (top_right[0] - top_left[0])/2.0 -center_x, frame.shape[0]-top_left[1] + (frame.shape[0]-top_right[1] - top_left[1]+ frame.shape[0])/2.0 -center_y+frame.shape[0]]))
 
                 # Draw the ArUco marker ID on the video frame
                 # The ID is always located at the top_left of the ArUco marker

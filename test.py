@@ -143,6 +143,7 @@ elif (flag == "Real"):
             break
         try:
             udp.send(positionControl(targetPosition,inf[1][0],inf[2][0]))
+            print(inf[1][0],inf[2][0])
             t2 = time.time()
         except:
             udp.send(";"+str(iterr)+".100,100/:")
