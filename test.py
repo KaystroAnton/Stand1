@@ -145,7 +145,7 @@ elif (flag == "Real"):
             udp.send(positionControl(targetPosition,inf[1][0],inf[2][0]))
             t2 = time.time()
         except:
-            udp.send(";"+str(-iterr)+".100,100/:")
+            udp.send(";"+str(iterr)+".100,100/:")
             t2 = time.time()
         iterr = iterr+1
         print("time from starting getting image to getting ccordinates -", t1-t0, "beginning -", t0, "ending -", t1)
