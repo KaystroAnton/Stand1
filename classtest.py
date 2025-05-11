@@ -132,7 +132,7 @@ class RealCamera:
         self.cap =cv.VideoCapture(deviceIndex)
         self.shape = self.cap.read()[1].shape
 
-    def calibrateCamera(self,calibratePathFolder = 'C:\PythonProjects\RoboFoot\RoboFoot\calibrateimages', numberofImages = 10, boardSize = (6,9)):  # get camera parameters
+    def calibrateCamera(self,calibratePathFolder = 'C:\PythonProjects\Stand1\calibrateimages', numberofImages = 10, boardSize = (6,9)):  # get camera parameters
         'calibrate camera,takes a set number of images from a folder located on the specified path'
         criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)  # termination criteria
 

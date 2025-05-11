@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 control ="PI"
 flag = "Simulation" # Real or Simulation
-#flag = "Real"
+flag = "Real"
 dt = 1/240
 maxTime = 10
 logTime = np.arange(0.0, maxTime, dt)
@@ -132,11 +132,11 @@ elif (flag == "Real"):
     targetPosition = (int(kx*xImage),yImage-int(ky*yImage))
     print("x_lenfth - ",xImage,"y_lenfth - ",yImage)
     print("target -",targetPosition)
-    #param = Cam.calibrateCamera()
+    param = Cam.calibrateCamera()
     print("time from the beginning of the loops -", time.time())
     while True:
         t0 = time.time()
-        inf = Cam.detectAruco()
+        inf = Cam.detectAruco(calibrateParam = param)
         t1 = time.time()
         cv.circle(inf[0], (targetPosition[0],yImage-targetPosition[1]), 4, (0, 0, 255), -1)
         cv.imshow('realFrame',inf[0])
