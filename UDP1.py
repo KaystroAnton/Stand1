@@ -12,12 +12,12 @@ EspPort = 2000 # check in Arduino
 class UDP:
     def __init__(self, ip = computerIP, port = socketPort):
         self.send_socket = socket.socket(socket.AF_INET,  # Internet
-                             socket.SOCK_DGRAM)  # UDP
-        self.recv_socket = socket.socket(socket.AF_INET,  # Internet
                                          socket.SOCK_DGRAM)  # UDP
-        self.recv_socket.setblocking(False)
-        self.recv_socket.settimeout(0.1)
-        self.recv_socket.bind((ip, port))
+        #self.recv_socket = socket.socket(socket.AF_INET,  # Internet
+                                         #socket.SOCK_DGRAM)  # UDP
+        #self.recv_socket.setblocking(False)
+        #self.recv_socket.settimeout(0.1)
+        #self.recv_socket.bind((ip, port))
 
     def send(self, mess, targetIP = EspIP, targetPort = EspPort):
         if isinstance(mess, str): # checking that mess type is string
@@ -34,6 +34,3 @@ class UDP:
                 print("received message: %s" % data.decode())
             except TimeoutError:
                 pass
-
-
-

@@ -136,6 +136,13 @@ elif (flag == "Real"):
         cv.circle(inf[0], (targetPosition[0],yImage-targetPosition[1]), 4, (0, 0, 255), -1)
         cv.imshow('realFrame',inf[0])
         if cv.waitKey(1) & 0xFF == ord('q'):
+            udp.send(";" + str(iterr) + ".0,0/:")
+            time.sleep(0.2)
+            udp.send(";" + str(iterr) + ".0,0/:")
+            time.sleep(0.2)
+            udp.send(";" + str(iterr) + ".0,0/:")
+            time.sleep(0.2)
+            udp.send(";" + str(iterr) + ".0,0/:")
             break
         try:
             udp.send(positionControl(targetPosition,inf[1][0],inf[2][0]))
