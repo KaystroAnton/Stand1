@@ -130,6 +130,13 @@ class RealCamera:
         "Starts recording the camera"
         #deviceIndex - argument can be either the device index or the name of a video file
         self.cap =cv.VideoCapture(deviceIndex)
+        print("w -",cv.CAP_PROP_FRAME_WIDTH)
+        print("h -", cv.CAP_PROP_FRAME_HEIGHT)
+        self.cap.set(cv.CAP_PROP_FRAME_WIDTH,Cam.RealCameraWidth)
+        self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, Cam.RealCameraHeight)
+        print("w -", cv.CAP_PROP_FRAME_WIDTH)
+        print("h -", cv.CAP_PROP_FRAME_HEIGHT)
+        print(self.cap.read())
         self.shape = self.cap.read()[1].shape
 
     def calibrateCamera(self,calibratePathFolder = 'C:\PythonProjects\Stand1\calibrateimages', numberofImages = 10, boardSize = (6,9)):  # get camera parameters

@@ -117,6 +117,17 @@ def posControler(refPosition,robotPosision,roborOriantation):
     else:
         return [[0,0], True]
 
+def posControlerPI(refPosition,robotPosision,roborOriantation,t):
+    e0 = angle180(fromvVectorToAngel([refPosition[0] - robotPosision[0],refPosition[1] - robotPosision[1]])- roborOriantation)
+    print(e0,"e0")
+    es = np.sqrt(pow(refPosition[0]-robotPosision[0],2) + pow(refPosition[1]-robotPosision[1],2))*np.cos(e0*np.pi/180.0)
+    print(es, "es")
+    if np.sqrt(pow(refPosition[0] - robotPosision[0],2) + pow(refPosition[1] - robotPosision[1],2) > accuracyCoor):
+        reg = regulatorPI(t,e0, es)
+        return [[motrorScale(reg[0]),motrorScale(reg[1])],False]
+    else:
+        return [[0,0], True]
+
 def realposControler(refPosition,robotPosision,roborOriantation):
     e0 = angle180(fromvVectorToAngel([refPosition[0] - robotPosision[0], refPosition[1] - robotPosision[1]]) - roborOriantation)
     print(e0, "e0")
@@ -170,27 +181,24 @@ def regulatorPI(time,angle, dist, L = 0.23, kProp = 0.5,kIntegr = 0.1):
     integrateRegulatorSumL = integrateRegulatorSumL + (dist - angle / L) * time
     global integrateRegulatorSumR
     integrateRegulatorSumR = integrateRegulatorSumR + (dist + angle / L) * time
+    print(integrateRegulatorSumL,integrateRegulatorSumR)
 
     motorL = kProp * (dist - angle / L) + kIntegr*integrateRegulatorSumL
     motorR = kProp * (dist + angle / L) + kIntegr*integrateRegulatorSumR
-    return scale(motorL, motorR)
+    return (motorL,motorR)
+    #return scale(motorL, motorR)
 
 def motrorScale(motor):
     if motor>=100:
         return 100
     elif motor <=-100:
         return -100
-    elif abs(motor)<60:
-        if motor>0:
-            return 60
-        else:
-            return -60
     else:
         return  motor
 
-def scale(motorL,motorR):
-    scale1 = (abs(motorL) + abs(motorR))/100.0
-    return [motorL/scale1,motorR/scale1]
+#def scale(motorL,motorR):
+    #scale1 = (abs(motorL) + abs(motorR))/100.0
+    #return [motorL/scale1,motorR/scale1]
 
 
 

@@ -1,10 +1,11 @@
 import random
 import os
 import cv2 as cv
-
-from help import positionControl, simPositionControl,posControler, fromvVectorToAngel,posAndOrientControl,fromAngelToVector,angle180,orientControlSetedLinSpeedTrue
 import numpy as np
 import matplotlib.pyplot as plt
+
+from help import positionControl,posControler, fromvVectorToAngel,fromAngelToVector,angle180
+import help
 control ="PI"
 flag = "Simulation" # Real or Simulation
 flag = "Real"
@@ -12,18 +13,12 @@ dt = 1/240
 maxTime = 10
 logTime = np.arange(0.0, maxTime, dt)
 sz = len(logTime)
-logPosX = np.zeros(sz)
-logPosY = np.zeros(sz)
-logAngel = np.zeros(sz)
-reflogPosX = np.zeros(sz)
-reflogPosY = np.zeros(sz)
-reflogAngel = np.zeros(sz)
 if flag == "Simulation":
     from classtest import Stand
     import pybullet as pb
     import time
     from CameraSetUp import imgSide,halfFieldSize
-    for i in range(1):
+    for i in range(5):
         kx= random.uniform(0.2, 0.8)
         ky= random.uniform(0.2, 0.8)
         ka = random.uniform(-1.0, 1.0)
@@ -64,7 +59,7 @@ if flag == "Simulation":
                 break
             try:
                 #flag = posControler([targetPosition[0], imgSide - targetPosition[1]],det[1][0],det[2][0])
-                flag = posControler([targetPosition[0], imgSide - targetPosition[1]], det[1][0], det[2][0])
+                flag = help.posControlerPI([targetPosition[0], imgSide - targetPosition[1]], det[1][0], det[2][0],dt)
                 print("control lw- ", flag[0][0], "rw-",flag[0][1])
                 stand.setControl([flag[0]])
                 logPosX[itter] = det[1][0][0]
@@ -73,7 +68,7 @@ if flag == "Simulation":
                 reflogAngel[itter] = refAngle
             except:
                 print("no aruco " )
-                break
+                #break
             try:
                 print(det[1][0], "robot angle ", float(det[2][0]))
                 print(fromvVectorToAngel([targetPosition[0] - det[1][0][0],imgSide - targetPosition[1] - det[1][0][1]]))
