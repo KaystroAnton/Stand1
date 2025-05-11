@@ -140,12 +140,15 @@ def regulator(angle, dist, L = 0.23, kProp = 0.5):
 
 def regulatorPI(time,angle, dist, L = 0.23, kProp = 0.5,kIntegr = 0.1):
     global integrateRegulatorSumL
-    integrateRegulatorSumL = integrateRegulatorSumL + (dist - angle / L) * time
     global integrateRegulatorSumR
-    integrateRegulatorSumR = integrateRegulatorSumR + (dist + angle / L) * time
-
     motorL = kProp * (dist - angle / L) + kIntegr*integrateRegulatorSumL
     motorR = kProp * (dist + angle / L) + kIntegr*integrateRegulatorSumR
+    if abs(motorL)<100:
+        integrateRegulatorSumL = integrateRegulatorSumL + (dist - angle / L) * time
+        motorL = kProp * (dist - angle / L) + kIntegr * integrateRegulatorSumL
+    if abs(motorR) < 100:
+        integrateRegulatorSumR = integrateRegulatorSumR + (dist + angle / L) * time
+        motorR = kProp * (dist + angle / L) + kIntegr * integrateRegulatorSumR
     return (motorL,motorR)
     #return scale(motorL, motorR)
 
