@@ -5,9 +5,9 @@ import cv2 as cv
 from help import positionControl, simPositionControl,posControler, fromvVectorToAngel,posAndOrientControl,fromAngelToVector,angle180,orientControlSetedLinSpeedTrue
 import numpy as np
 import matplotlib.pyplot as plt
-control ="orientControlSetedLinSpeedNew"
+control ="PI"
 flag = "Simulation" # Real or Simulation
-flag = "Real"
+#flag = "Real"
 dt = 1/240
 maxTime = 10
 logTime = np.arange(0.0, maxTime, dt)
@@ -63,7 +63,8 @@ if flag == "Simulation":
             if cv.waitKey(1) == ord('q'):
                 break
             try:
-                flag = posControler([targetPosition[0], imgSide - targetPosition[1]],det[1][0],det[2][0])
+                #flag = posControler([targetPosition[0], imgSide - targetPosition[1]],det[1][0],det[2][0])
+                flag = posControler([targetPosition[0], imgSide - targetPosition[1]], det[1][0], det[2][0])
                 print("control lw- ", flag[0][0], "rw-",flag[0][1])
                 stand.setControl([flag[0]])
                 logPosX[itter] = det[1][0][0]
@@ -105,7 +106,7 @@ if flag == "Simulation":
         plt.legend()
 
         name = "\control_" +str(control) + "_x_" + str(targetPosition[0])+'_y_'+str(imgSide - targetPosition[1])+'maxTime_'+str(maxTime)+'refAngle_'+str(refAngle)+'.png'
-        save ="D:\pythonProjects\RoboFoot-master\plots"+name
+        save ="C:\PythonProjects\Stand1\plots"+name
         print(os.getcwd()+"plots"+name)
         print(save)
         plt.savefig(save)

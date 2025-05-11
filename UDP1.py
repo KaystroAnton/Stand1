@@ -3,7 +3,7 @@ import string
 
 from numpy.f2py.auxfuncs import throw_error
 
-computerIP = "192.168.1.129" # check wi-fi parameters
+computerIP = "192.168.0.109" # check wi-fi parameters
 socketPort = 8888 #any unused port
 EspIP = "192.168.1.101" # check in Arduino
 EspPort = 2000 # check in Arduino
