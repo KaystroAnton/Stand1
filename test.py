@@ -4,7 +4,7 @@ import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
 
-from help import positionControl,posControler, fromvVectorToAngel,fromAngelToVector,angle180
+from help import posControler, fromvVectorToAngel,fromAngelToVector,angle180
 import help
 control ="PI"
 flag = "Simulation" # Real or Simulation
@@ -144,12 +144,18 @@ elif (flag == "Real"):
             time.sleep(0.2)
             udp.send(";" + str(iterr) + ".0,0/:")
             break
+        t2 = time.time()
         try:
-            udp.send(positionControl(targetPosition,inf[1][0],inf[2][0]))
-            print(inf[1][0],inf[2][0])
             t2 = time.time()
+            result = help.realposControlerPI(targetPosition,inf[1][0],inf[2][0],t2-t0)
+            if not result[1]:
+                udp.send(";" + str(iterr)+result[0])
+            else:
+                break
+            print(inf[1][0],inf[2][0])
+
         except:
-            udp.send(";"+str(iterr)+".100,100/:")
+            udp.send(";"+str(iterr)+".10,10/:")
             t2 = time.time()
         iterr = iterr+1
         print("time from starting getting image to getting ccordinates -", t1-t0, "beginning -", t0, "ending -", t1)

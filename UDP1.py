@@ -5,7 +5,7 @@ from numpy.f2py.auxfuncs import throw_error
 
 computerIP = "192.168.0.109" # check wi-fi parameters
 socketPort = 8888 #any unused port
-EspIP = "192.168.0.101" # check in Arduino
+EspIP = "192.168.0.103" # check in Arduino
 EspPort = 2000 # check in Arduino
 
 
