@@ -5,8 +5,6 @@ socketPort = 8888 #any unused port
 
 recv_socket = socket.socket(socket.AF_INET,  # Internet
                                          socket.SOCK_DGRAM)  # UDP
-        #self.recv_socket.setblocking(False)
-        #self.recv_socket.settimeout(0.1)
 recv_socket.bind((computerIP, socketPort))
 while True:
     data, addr = recv_socket.recvfrom(1024)  # buffer size is 1024 bytes
