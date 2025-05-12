@@ -6,13 +6,11 @@ import matplotlib.pyplot as plt
 
 from help import posControler, fromvVectorToAngel,fromAngelToVector,angle180
 import help
+
+
 control ="PI"
 flag = "Simulation" # Real or Simulation
 flag = "Real"
-dt = 1/240
-maxTime = 10
-logTime = np.arange(0.0, maxTime, dt)
-sz = len(logTime)
 if flag == "Simulation":
     from classtest import Stand
     import pybullet as pb
@@ -26,6 +24,10 @@ if flag == "Simulation":
         targetPosition = [int(kx*imgSide), int(ky*imgSide)]
         refAngle = 30
         itter = 0
+        dt = 1 / 240
+        maxTime = 10
+        logTime = np.arange(0.0, maxTime, dt)
+        sz = len(logTime)
         logPosX = np.zeros(sz)
         logPosY = np.zeros(sz)
         logAngel = np.zeros(sz)
@@ -113,6 +115,14 @@ elif (flag == "Real"):
     from classtest import RealCamera
     from UDP1 import UDP
     import time
+
+    logTime = [0]
+    logPosX = []
+    logPosY = []
+    logAngle = []
+    reflogPosX = []
+    reflogPosY = []
+    reflogAngle = []
     Cam = RealCamera()
     if not Cam.cap.isOpened():
         print("Cannot open camera")
@@ -128,14 +138,25 @@ elif (flag == "Real"):
     print("x_lenfth - ",xImage,"y_lenfth - ",yImage)
     print("target -",targetPosition)
     param = Cam.calibrateCamera()
-    print("time from the beginning of the loops -", time.time())
+    tStart = time.time()
+    #print("time from the beginning of the loops -", tStart)
     while True:
         t0 = time.time()
         inf = Cam.detectAruco(calibrateParam = param)
         t1 = time.time()
         cv.circle(inf[0], (targetPosition[0],yImage-targetPosition[1]), 4, (0, 0, 255), -1)
+        if iterr ==0:
+            startImage = inf[0]
+            logPosX.append(inf[1][0][0])
+            logPosY.append(inf[1][0][1])
+            logAngle.append(inf[2][0])
+            reflogPosX.append([targetPosition[0]])
+            reflogPosY.append([targetPosition[1]])
+            reflogAngle.append([0])
+        #Cam.out.write(inf[0])
         cv.imshow('realFrame',inf[0])
         if cv.waitKey(1) & 0xFF == ord('q'):
+            #Cam.out.release()
             udp.send(";" + str(iterr) + ".0,0/:")
             time.sleep(0.2)
             udp.send(";" + str(iterr) + ".0,0/:")
@@ -146,18 +167,53 @@ elif (flag == "Real"):
             break
         t2 = time.time()
         try:
-            t2 = time.time()
             result = help.realposControlerPI(targetPosition,inf[1][0],inf[2][0],t2-t0)
             if not result[1]:
                 udp.send(";" + str(iterr)+result[0])
+                logPosX.append(inf[1][0][0])
+                logPosY.append(inf[1][0][1])
+                logAngle.append(inf[2][0])
             else:
                 break
             print(inf[1][0],inf[2][0])
-
         except:
             udp.send(";"+str(iterr)+".10,10/:")
+            logPosX.append(logPosX[iterr])
+            logPosY.append(logPosY[iterr])
+            logAngle.append(logAngle[iterr])
             t2 = time.time()
-        iterr = iterr+1
-        print("time from starting getting image to getting ccordinates -", t1-t0, "beginning -", t0, "ending -", t1)
+        reflogPosX.append([targetPosition[0]])
+        reflogPosY.append([targetPosition[1]])
+        reflogAngle.append([0])
+        logTime.append(logTime[iterr] + (t2 - t0))
+        iterr = iterr + 1
+        #print("time from starting getting image to getting coordinates -", t1-t0, "beginning -", t0, "ending -", t1)
+
+    plt.subplot(3, 1, 1)
+    plt.grid(True)
+    plt.plot(logTime, logPosX, label="simPosX")
+    plt.plot(logTime, reflogPosX, label="refPosX")
+    plt.legend()
+
+    plt.subplot(3, 1, 2)
+    plt.grid(True)
+    plt.plot(logTime, logPosY, label="simPosY")
+    plt.plot(logTime, reflogPosY, label="refPosY")
+    plt.legend()
+
+    plt.subplot(3, 1, 3)
+    plt.grid(True)
+    plt.plot(logTime, logAngle, label="simAngle")
+    plt.plot(logTime, reflogAngle, label="refAngle")
+    plt.legend()
+
+    name = "\controlReal_" + str(control) + "_x_" + str(targetPosition[0]) + '_y_' + str(
+        targetPosition[1]) + 'maxTime_' + str(round(logTime[len(logTime)-1],2)) + 'refAngle_' + str(reflogAngle[0]) + '.png'
+    path = os.getcwd() +  "\\plots" + name
+    print(os.getcwd() +  "\\plots" + name)
+    plt.savefig(path)
+    plt.close('all')
+    path = os.getcwd() + "\\trajectories" + name
+    help.saveTraectory(startImage,path,logPosX,logPosY,yImage,targetPosition)
 
 

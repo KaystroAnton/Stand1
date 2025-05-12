@@ -3,7 +3,7 @@ import cv2 as cv
 import os
 
 accuracyAnge = 10
-accuracyCoor = 5
+accuracyCoor = 50
 simStoppingAngel = 20
 integrateRegulatorSumL = 0
 integrateRegulatorSumR = 0
@@ -128,7 +128,7 @@ def realposControlerPI(refPosition,robotPosision,roborOriantation,t):
     es = np.sqrt(pow(refPosition[0]-robotPosision[0],2) + pow(refPosition[1]-robotPosision[1],2))*np.cos(e0*np.pi/180.0)
     print(es, "es")
     if np.sqrt(pow(refPosition[0] - robotPosision[0],2) + pow(refPosition[1] - robotPosision[1],2) > accuracyCoor):
-        reg = regulatorPI(t,e0, es)
+        reg = regulatorPI(t,e0, es/1)
         return [fromSimtoReal([motrorScale(reg[0]),motrorScale(reg[1])]),False]
     else:
         return [fromSimtoReal([0,0]), True]
@@ -138,31 +138,44 @@ def regulator(angle, dist, L = 0.23, kProp = 0.5):
     motorR =  kProp * (dist + angle / L)
     return motorL,motorR
 
-def regulatorPI(time,angle, dist, L = 0.23, kProp = 0.5,kIntegr = 0.1):
+def regulatorPI(time,angle, dist, L = 0.23, kProp = 0.7,kIntegr = 0.25,MaxSpeed = 65):
     global integrateRegulatorSumL
     global integrateRegulatorSumR
-    motorL = kProp * (dist - angle / L) + kIntegr*integrateRegulatorSumL
-    motorR = kProp * (dist + angle / L) + kIntegr*integrateRegulatorSumR
-    if abs(motorL)<100:
-        integrateRegulatorSumL = integrateRegulatorSumL + (dist - angle / L) * time
-        motorL = kProp * (dist - angle / L) + kIntegr * integrateRegulatorSumL
-    if abs(motorR) < 100:
-        integrateRegulatorSumR = integrateRegulatorSumR + (dist + angle / L) * time
-        motorR = kProp * (dist + angle / L) + kIntegr * integrateRegulatorSumR
+    #motorL = kProp * (dist - angle / L) + kIntegr*integrateRegulatorSumL
+    #motorR = kProp * (dist + angle / L) + kIntegr*integrateRegulatorSumR
+    #if abs(motorL)<MaxSpeed:
+    if abs(integrateRegulatorSumL) < 100/kIntegr:
+        integrateRegulatorSumL = integrateRegulatorSumL + ((dist - angle / L) * time)/5.0
+    motorL = kProp * (dist - angle / L) + kIntegr * integrateRegulatorSumL
+    #if abs(motorR) < MaxSpeed:
+    if abs(integrateRegulatorSumR) < 100 / kIntegr:
+        integrateRegulatorSumR = integrateRegulatorSumR + ((dist + angle / L) * time)/5.0
+    motorR = kProp * (dist + angle / L) + kIntegr * integrateRegulatorSumR
+    print(round(dist, 2), "- dist", round(angle/ L, 2), "- angle")
+    print(round(dist,2)  ,"- dist", round(angle/ L,2), "- angle", round(integrateRegulatorSumL,2) , "- Lsum",round(integrateRegulatorSumR,2), "-Rsum",round(time,2), " -sum")
     return (motorL,motorR)
     #return scale(motorL, motorR)
 
-def motrorScale(motor):
-    if motor>=100:
-        return 100
-    elif motor <=-100:
-        return -100
+def motrorScale(motor,MaxSpeed = 65):
+    if motor>=MaxSpeed:
+        return MaxSpeed
+    elif motor <=-MaxSpeed:
+        return -MaxSpeed
     else:
         return  motor
 
 #def scale(motorL,motorR):
     #scale1 = (abs(motorL) + abs(motorR))/100.0
     #return [motorL/scale1,motorR/scale1]
+
+def saveTraectory(frame,path,logX,logY,shapeY,target):
+    for i in range(len(logX)):
+        cv.circle(frame,[logX[i],shapeY - logY[i]],4,(255, 0 ,0),-1)
+    cv.circle(frame, [logX[0], shapeY - logY[0]], 4, (0, 0, 255), -1)
+    cv.circle(frame, [target[0],shapeY - target[1]], 4, (0, 0, 255), -1)
+    cv.imwrite(path, frame)
+
+
 
 
 

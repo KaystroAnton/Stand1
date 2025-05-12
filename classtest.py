@@ -133,6 +133,9 @@ class RealCamera:
         self.cap.set(cv.CAP_PROP_FRAME_WIDTH,Cam.RealCameraWidth)
         self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, Cam.RealCameraHeight)
         self.shape = self.cap.read()[1].shape
+        #fourcc
+        #print(cv.CAP_PROP_FOURCC)
+        #self.out = cv.VideoWriter('captured.avi', cv.VideoWriter.fourcc('M','P','4','V'), self.cap.get(cv.CAP_PROP_FPS), (Cam.RealCameraWidth,Cam.RealCameraHeight))
 
     def calibrateCamera(self,calibratePathFolder = 'C:\PythonProjects\Stand1\calibrateimages', numberofImages = 10, boardSize = (6,9)):  # get camera parameters
         'calibrate camera,takes a set number of images from a folder located on the specified path'
@@ -188,7 +191,7 @@ class RealCamera:
             t0 = time.time()
             frame = self.cap.read()[1]
             t1 = time.time()
-            print("time for reading frame - ",t1-t0," start reading time - ",t0," end reading time - ",t1)
+            #print("time for reading frame - ",t1-t0," start reading time - ",t0," end reading time - ",t1)
         if calibrateParam != None:
             calibratedFrame = self.calibrateFrame(frame, calibrateParam)
         else:
