@@ -2,8 +2,8 @@ import numpy as  np
 import cv2 as cv
 import os
 
-accuracyAnge = 10
-accuracyCoor = 50
+accuracyAnge = 5
+accuracyCoor = 20
 simStoppingAngel = 20
 integrateRegulatorSumL = 0
 integrateRegulatorSumR = 0
@@ -62,11 +62,11 @@ def posControler(refPosition,robotPosision,roborOriantation):
     print(e0,"e0")
     es = np.sqrt(pow(refPosition[0]-robotPosision[0],2) + pow(refPosition[1]-robotPosision[1],2))*np.cos(e0*np.pi/180.0)
     print(es, "es")
-    if np.sqrt(pow(refPosition[0] - robotPosision[0],2) + pow(refPosition[1] - robotPosision[1],2) > accuracyCoor):
-        reg = regulator(e0, es)
-        return [[motrorScale(reg[0]),motrorScale(reg[1])],False]
+    reg = regulator(e0,es)
+    if np.sqrt(pow(refPosition[0] - robotPosision[0], 2) + pow(refPosition[1] - robotPosision[1], 2) > accuracyCoor):
+        return [scale(motrorScale(reg[0]), motrorScale(reg[1])), False]
     else:
-        return [[0,0], True]
+        return [scale(motrorScale(reg[0]), motrorScale(reg[1])), True]
 
 def realposControler(refPosition,robotPosision,roborOriantation):
     e0 = angle180(fromvVectorToAngel([refPosition[0] - robotPosision[0], refPosition[1] - robotPosision[1]]) - roborOriantation)
@@ -109,18 +109,23 @@ def posAndOrientControl(refPosition,refOrientation,robotPosision,robotOriantatio
     print(gamma)
     xRef = robotPosision[0] +np.sqrt(pow(refPosition[0]-robotPosision[0],2) + pow(refPosition[1]-robotPosision[1],2))* np.cos((betta +gamma)*np.pi/180)
     yRef = robotPosision[1] +np.sqrt(pow(refPosition[0]-robotPosision[0],2) + pow(refPosition[1]-robotPosision[1],2))* np.sin((betta +gamma)*np.pi/180)
-    return posControler([xRef,yRef],robotPosision,robotOriantation)
+    res = posControler([xRef,yRef],robotPosision,robotOriantation)
+    if (abs(refOrientation - robotOriantation)<accuracyAnge and res[1]):
+        return [[0,0],True]
+    else:
+        return [res[0],False]
+
 
 def posControlerPI(refPosition,robotPosision,roborOriantation,t):
     e0 = angle180(fromvVectorToAngel([refPosition[0] - robotPosision[0],refPosition[1] - robotPosision[1]])- roborOriantation)
     print(e0,"e0")
     es = np.sqrt(pow(refPosition[0]-robotPosision[0],2) + pow(refPosition[1]-robotPosision[1],2))*np.cos(e0*np.pi/180.0)
     print(es, "es")
+    reg = regulatorPI(t, e0, es)
     if np.sqrt(pow(refPosition[0] - robotPosision[0],2) + pow(refPosition[1] - robotPosision[1],2) > accuracyCoor):
-        reg = regulatorPI(t,e0, es)
         return [[motrorScale(reg[0]),motrorScale(reg[1])],False]
     else:
-        return [[0,0], True]
+        return [[motrorScale(reg[0]),motrorScale(reg[1])], True]
 
 def realposControlerPI(refPosition,robotPosision,roborOriantation,t):
     e0 = angle180(fromvVectorToAngel([refPosition[0] - robotPosision[0],refPosition[1] - robotPosision[1]])- roborOriantation)
@@ -133,7 +138,7 @@ def realposControlerPI(refPosition,robotPosision,roborOriantation,t):
     else:
         return [fromSimtoReal([0,0]), True]
 
-def regulator(angle, dist, L = 0.23, kProp = 0.5):
+def regulator(angle, dist, L = 0.23, kProp = 0.9):
     motorL =  kProp * (dist - angle /L)
     motorR =  kProp * (dist + angle / L)
     return motorL,motorR
@@ -156,7 +161,7 @@ def regulatorPI(time,angle, dist, L = 0.23, kProp = 0.7,kIntegr = 0.25,MaxSpeed 
     return (motorL,motorR)
     #return scale(motorL, motorR)
 
-def motrorScale(motor,MaxSpeed = 65):
+def motrorScale(motor,MaxSpeed = 100):
     if motor>=MaxSpeed:
         return MaxSpeed
     elif motor <=-MaxSpeed:
@@ -164,9 +169,9 @@ def motrorScale(motor,MaxSpeed = 65):
     else:
         return  motor
 
-#def scale(motorL,motorR):
-    #scale1 = (abs(motorL) + abs(motorR))/100.0
-    #return [motorL/scale1,motorR/scale1]
+def scale(motorL,motorR):
+    scale1 = (abs(motorL) + abs(motorR))/100.0
+    return [motorL/scale1,motorR/scale1]
 
 def saveTraectory(frame,path,logX,logY,shapeY,target):
     for i in range(len(logX)):

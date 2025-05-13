@@ -8,21 +8,21 @@ from help import posControler, fromvVectorToAngel,fromAngelToVector,angle180
 import help
 
 
-control ="PI"
+control ="posAndOrientControl"
 flag = "Simulation" # Real or Simulation
-flag = "Real"
+#flag = "Real"
 if flag == "Simulation":
     from classtest import Stand
     import pybullet as pb
     import time
     from CameraSetUp import imgSide,halfFieldSize
-    for i in range(5):
+    for i in range(25):
         kx= random.uniform(0.2, 0.8)
         ky= random.uniform(0.2, 0.8)
         ka = random.uniform(-1.0, 1.0)
         print(kx,ky,ka)
         targetPosition = [int(kx*imgSide), int(ky*imgSide)]
-        refAngle = 30
+        refAngle = 180*ka
         itter = 0
         dt = 1 / 240
         maxTime = 10
@@ -51,7 +51,7 @@ if flag == "Simulation":
             det = stand.detectAruco(image)
             #
             cv.circle(det[0], (targetPosition[0], targetPosition[1]), 4, (0, 0, 255), -1)
-            if control == "orientControlSetedLinSpeed":
+            if control == "posAndOrientControl":
                 vec = fromAngelToVector(refAngle)
                 cv.line(det[0], [targetPosition[0], targetPosition[1]],
                         [targetPosition[0] + int(vec[0] * 10), targetPosition[1] - int(vec[1] * 10)],
@@ -61,7 +61,9 @@ if flag == "Simulation":
                 break
             try:
                 #flag = posControler([targetPosition[0], imgSide - targetPosition[1]],det[1][0],det[2][0])
-                flag = help.posControlerPI([targetPosition[0], imgSide - targetPosition[1]], det[1][0], det[2][0],dt)
+                #flag = help.realposControlerPI([targetPosition[0], imgSide - targetPosition[1]], det[1][0], det[2][0],dt)
+                #flag = help.orientControlSetedLinSpeed(det[2][0],refAngle)
+                flag = help.posAndOrientControl([targetPosition[0], imgSide - targetPosition[1]],refAngle,det[1][0],angle180(det[2][0]))
                 print("control lw- ", flag[0][0], "rw-",flag[0][1])
                 stand.setControl([flag[0]])
                 logPosX[itter] = det[1][0][0]
@@ -70,7 +72,7 @@ if flag == "Simulation":
                 reflogAngel[itter] = refAngle
             except:
                 print("no aruco " )
-                #break
+                break
             try:
                 print(det[1][0], "robot angle ", float(det[2][0]))
                 print(fromvVectorToAngel([targetPosition[0] - det[1][0][0],imgSide - targetPosition[1] - det[1][0][1]]))
@@ -103,10 +105,8 @@ if flag == "Simulation":
         plt.legend()
 
         name = "\control_" +str(control) + "_x_" + str(targetPosition[0])+'_y_'+str(imgSide - targetPosition[1])+'maxTime_'+str(maxTime)+'refAngle_'+str(refAngle)+'.png'
-        save ="C:\PythonProjects\Stand1\plots"+name
-        print(os.getcwd()+"plots"+name)
-        print(save)
-        plt.savefig(save)
+        path = os.getcwd() + "\\plots" + name
+        plt.savefig(path)
         plt.close('all')
         pb.disconnect()
 
@@ -210,7 +210,6 @@ elif (flag == "Real"):
     name = "\controlReal_" + str(control) + "_x_" + str(targetPosition[0]) + '_y_' + str(
         targetPosition[1]) + 'maxTime_' + str(round(logTime[len(logTime)-1],2)) + 'refAngle_' + str(reflogAngle[0]) + '.png'
     path = os.getcwd() +  "\\plots" + name
-    print(os.getcwd() +  "\\plots" + name)
     plt.savefig(path)
     plt.close('all')
     path = os.getcwd() + "\\trajectories" + name
