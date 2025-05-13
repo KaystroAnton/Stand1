@@ -1,8 +1,6 @@
 import pybullet as pb
 import math
 imgSide = 600
-#RealCameraHeight = 960
-#RealCameraWidth = 1280
 RealCameraHeight = 1080
 RealCameraWidth = 1920
 halfFieldSize = 4.0/2.0

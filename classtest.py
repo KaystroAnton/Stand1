@@ -6,13 +6,14 @@ import ArucoDetectorSetUp as Detector
 import help
 from help import fromvVectorToAngel
 import time
+from CameraSetUp import halfFieldSize
 # for more info about function print(name_of_the_class_instance.function_name.__doc__)
 class Stand:
     'Creat a stand'
     def __init__(self,robot_file_name = "robot.urdf",
                  field_file_name = "field.urdf",
                  number_of_robots = 1,
-                 coordinates_of_robots = [[0,0,0.25]]):
+                 coordinates_of_robots = [[halfFieldSize, halfFieldSize, 0.08]]):
         'creates a field and a set number of robots at the entered positions'
         if len(coordinates_of_robots) != number_of_robots: #checking the entered data
             raise ValueError(str(self) + "the size of the list does not match the number of robots")

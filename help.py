@@ -78,7 +78,9 @@ def realposControler(refPosition,robotPosision,roborOriantation):
     else:
         return [";0,0/:", True]
 
-def orientControlSetedLinSpeed(robotOrientation, refOrientation,linspeed = 60,L=0.23,kProp = 0.8):
+def orientControlSetedLinSpeed(refOrientation, robotOrientation,linspeed = 60,L=0.23,kProp = 0.8):
+    a = angle180(refOrientation - robotOrientation)
+    b= 2 / 3
     turn = (angle180(refOrientation - robotOrientation) / L)
     if turn >= 100 - linspeed:
         turn = 100 - linspeed
@@ -88,7 +90,7 @@ def orientControlSetedLinSpeed(robotOrientation, refOrientation,linspeed = 60,L=
     motorR =  kProp * (linspeed + turn)
     return [[motorL,motorR],False]
 
-def realorientControlSetedLinSpeed(robotOrientation, refOrientation,linspeed = 60,L=0.23,kProp = 0.8):
+def realorientControlSetedLinSpeed(refOrientation, robotOrientation,linspeed = 60,L=0.23,kProp = 0.8):
     turn = (angle180(refOrientation - robotOrientation) / L)
     if turn>=100-linspeed:
         turn = 100-linspeed
