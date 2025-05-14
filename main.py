@@ -1,2 +1,2 @@
 import test
-test = test.Test("Real")
+test = test.Test("Simulation")

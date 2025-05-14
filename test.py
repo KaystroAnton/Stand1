@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from classtest import Stand
 import pybullet as pb
 import time
-from CameraSetUp import imgSide
+from CameraSetUp import imgSide,halfFieldSize
 
 
 from help import fromvVectorToAngel,fromAngelToVector,angle180
@@ -25,7 +25,7 @@ class Test:
                 if standParam == None:
                     self.stand = Stand()
                 else:
-                    self.stand = Stand(standParam)
+                    self.stand = Stand(*standParam)
                 self.stand.setCamera()
                 aruco = pb.loadURDF(fileName='aruco.urdf', basePosition=[2, 2, 1], useFixedBase=True)
                 pb.changeVisualShape(aruco, -1, textureUniqueId=pb.loadTexture('aruco_cube.png'))
