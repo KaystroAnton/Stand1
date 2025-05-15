@@ -14,9 +14,9 @@ from help import fromvVectorToAngel,fromAngelToVector,angle180
 import help
 class Test:
     'Creat a stand'
-    def __init__(self,flag,targetPos = None, refAng = None,standParam = None,
-                 dt = 1/240,maxTime =10, numberOfTests = 3,
-                 controlFuncAndParam = [help.orientControlSetedLinSpeed,["refOrientation","robotOrientation"]]):
+    def __init__(self,flag,targetPos = [336,164], refAng = None,standParam = None,
+                 dt = 1/240,maxTime =10, numberOfTests = 1,
+                 controlFuncAndParam = [help.posControlerPI,["refPosition","robotPosition","robotOrientation","time"]]):
         flagAngle = False
         self.flag = flag
         self.func = controlFuncAndParam[0]
@@ -34,7 +34,6 @@ class Test:
                     kx = random.uniform(0.2, 0.8)
                     ky = random.uniform(0.2, 0.8)
                     targetPosition = [int(kx * imgSide), imgSide - int(ky * imgSide)]
-                    print("targetPosition - ", targetPosition)
                 else:
                     targetPosition= targetPos
                 if refAng == None:
@@ -43,19 +42,20 @@ class Test:
                 else:
                     refAngle= refAng
                 for controlParam in controlFuncAndParam[1]:
-                    if controlParam == "refPosision":
+                    if controlParam == "refPosition":
                         print("targetPosition - ",targetPosition)
                     elif controlParam == "refOrientation":
                         print("refAngle - ",refAngle)
                         flagAngle =True
                 logTime = np.arange(0.0, maxTime, dt)
                 sz = len(logTime)
-                logPosX = np.zeros(sz)
-                logPosY = np.zeros(sz)
-                logAngel = np.zeros(sz)
-                reflogPosX = np.zeros(sz)
-                reflogPosY = np.zeros(sz)
-                reflogAngel = np.zeros(sz)
+                logTime = []
+                logPosX = []
+                logPosY = []
+                logAngle = []
+                reflogPosX = []
+                reflogPosY = []
+                reflogAngle = []
                 while itter < sz:
                     self.controlParam = []
                     self.stand.setArucoOnRobot(self.stand.robots[0], aruco)
@@ -72,11 +72,11 @@ class Test:
                         break
                     try:
                         for controlParam in controlFuncAndParam[1]:
-                            if controlParam == "refPosision":
+                            if controlParam == "refPosition":
                                 self.controlParam.append(targetPosition)
                             elif controlParam == "refOrientation":
                                 self.controlParam.append(refAngle)
-                            elif controlParam == "robotPosision":
+                            elif controlParam == "robotPosition":
                                 self.controlParam.append(det[1][0])
                             elif controlParam == "robotOrientation":
                                 self.controlParam.append(angle180(det[2][0]))
@@ -88,43 +88,87 @@ class Test:
                         control = self.func(*tuple(self.controlParam))
                         print("control lw- ", control[0][0], "rw-", control[0][1])
                         self.stand.setControl([control[0]])
-                        logPosX[itter] = det[1][0][0]
-                        logPosY[itter] = det[1][0][1]
-                        logAngel[itter] = angle180(det[2][0])
+                        logTime.append(itter * dt)
+                        logPosX.append(det[1][0][0])
+                        logPosY.append(det[1][0][1])
+                        logAngle.append(angle180(det[2][0]))
                         print(det[1][0], "robot angle ", angle180(det[2][0]))
                         print(angle180(fromvVectorToAngel(
                             [targetPosition[0] - det[1][0][0], targetPosition[1] - det[1][0][1]])))
                     except:
                         print("no aruco,end test ")
                         break
-                    reflogAngel[itter] = refAngle
-                    reflogPosX[itter] = targetPosition[0]
-                    reflogPosY[itter] = targetPosition[1]
+                    reflogAngle.append(refAngle)
+                    reflogPosX.append(targetPosition[0])
+                    reflogPosY.append(targetPosition[1])
                     itter += 1
                     if (control[1] == True):
                         break
                     pb.stepSimulation()
                     time.sleep(dt)
 
-                plt.subplot(3, 1, 1)
-                plt.grid(True)
-                plt.plot(logTime, logPosX, label="simPosX")
-                plt.plot(logTime, reflogPosX, label="refPosX")
-                plt.legend()
+                for controlParam in controlFuncAndParam[1]:
+                    print("----------------------------------------------------------------------------------------------")
+                    print(flagAngle)
+                    print(controlParam)
+                    print("----------------------------------------------------------------------------------------------")
+                    if ((controlParam == "refPosition") and flagAngle):
+                        plt.subplot(3, 1, 1)
+                        plt.grid(True)
+                        plt.plot(logTime, logPosX, label="simPosX")
+                        plt.plot(logTime, reflogPosX, label="refPosX")
+                        plt.legend()
 
-                plt.subplot(3, 1, 2)
-                plt.grid(True)
-                plt.plot(logTime, logPosY, label="simPosY")
-                plt.plot(logTime, reflogPosY, label="refPosY")
-                plt.legend()
+                        plt.subplot(3, 1, 2)
+                        plt.grid(True)
+                        plt.plot(logTime, logPosY, label="simPosY")
+                        plt.plot(logTime, reflogPosY, label="refPosY")
+                        plt.legend()
 
-                plt.subplot(3, 1, 3)
-                plt.grid(True)
-                plt.plot(logTime, logAngel, label="simAngle")
-                plt.plot(logTime, reflogAngel, label="refAngle")
-                plt.legend()
+                        plt.subplot(3, 1, 3)
+                        plt.grid(True)
+                        plt.plot(logTime, logAngle, label="simAngle")
+                        plt.plot(logTime, reflogAngle, label="refAngle")
+                        plt.legend()
+                        break
+                    elif controlParam == "refPosition":
+                        plt.subplot(3, 1, 1)
+                        plt.grid(True)
+                        plt.plot(logTime, logPosX, label="simPosX")
+                        plt.plot(logTime, reflogPosX, label="refPosX")
+                        plt.legend()
 
-                name = "\control_" + str("a") + "_x_" + str(targetPosition[0]) + '_y_' + str(
+                        plt.subplot(3, 1, 2)
+                        plt.grid(True)
+                        plt.plot(logTime, logPosY, label="simPosY")
+                        plt.plot(logTime, reflogPosY, label="refPosY")
+                        plt.legend()
+
+                        plt.subplot(3, 1, 3)
+                        plt.grid(True)
+                        plt.plot(logTime, logAngle, label="simAngle")
+                        plt.legend()
+                        break
+                    elif controlParam == "refOrientation":
+                        plt.subplot(3, 1, 1)
+                        plt.grid(True)
+                        plt.plot(logTime, logPosX, label="simPosX")
+                        plt.legend()
+
+                        plt.subplot(3, 1, 2)
+                        plt.grid(True)
+                        plt.plot(logTime, logPosY, label="simPosY")
+                        plt.legend()
+
+                        plt.subplot(3, 1, 3)
+                        plt.grid(True)
+                        plt.plot(logTime, logAngle, label="simAngle")
+                        plt.plot(logTime, reflogAngle, label="refAngle")
+                        plt.legend()
+                        break
+                        break
+
+                name = "\control_" + str("c") + "_x_" + str(targetPosition[0]) + '_y_' + str(
                     targetPosition[1]) + 'maxTime_' + str(maxTime) + 'refAngle_' + str(refAngle) + '.png'
                 path = os.getcwd() + "\\plots" + name
                 plt.savefig(path)
@@ -210,11 +254,11 @@ class Test:
                 t2 = time.time()
                 try:
                     for controlParam in controlFuncAndParam[1]:
-                        if controlParam == "refPosision":
+                        if controlParam == "refPosition":
                             self.controlParam.append(targetPosition)
                         elif controlParam == "refOrientation":
                             self.controlParam.append(refAngle)
-                        elif controlParam == "robotPosision":
+                        elif controlParam == "robotPosition":
                             self.controlParam.append(det[1][0])
                         elif controlParam == "robotOrientation":
                             self.controlParam.append(angle180(det[2][0]))
@@ -247,25 +291,48 @@ class Test:
                 iterr = iterr + 1
                 # print("time from starting getting image to getting coordinates -", t1-t0, "beginning -", t0, "ending -", t1)
 
-            plt.subplot(3, 1, 1)
-            plt.grid(True)
-            plt.plot(logTime, logPosX, label="simPosX")
-            plt.plot(logTime, reflogPosX, label="refPosX")
-            plt.legend()
+            for controlParam in controlFuncAndParam[1]:
+                if controlParam == "refPosition" and flagAngle:
+                    plt.subplot(3, 1, 1)
+                    plt.grid(True)
+                    plt.plot(logTime, logPosX, label="simPosX")
+                    plt.plot(logTime, reflogPosX, label="refPosX")
+                    plt.legend()
 
-            plt.subplot(3, 1, 2)
-            plt.grid(True)
-            plt.plot(logTime, logPosY, label="simPosY")
-            plt.plot(logTime, reflogPosY, label="refPosY")
-            plt.legend()
+                    plt.subplot(3, 1, 2)
+                    plt.grid(True)
+                    plt.plot(logTime, logPosY, label="simPosY")
+                    plt.plot(logTime, reflogPosY, label="refPosY")
+                    plt.legend()
 
-            plt.subplot(3, 1, 3)
-            plt.grid(True)
-            plt.plot(logTime, logAngle, label="simAngle")
-            plt.plot(logTime, reflogAngle, label="refAngle")
-            plt.legend()
+                    plt.subplot(3, 1, 3)
+                    plt.grid(True)
+                    plt.plot(logTime, logAngle, label="simAngle")
+                    plt.plot(logTime, reflogAngle, label="refAngle")
+                    plt.legend()
+                    break
+                elif controlParam == "refPosition":
+                    plt.subplot(3, 1, 1)
+                    plt.grid(True)
+                    plt.plot(logTime, logPosX, label="simPosX")
+                    plt.plot(logTime, reflogPosX, label="refPosX")
+                    plt.legend()
 
-            name = "\controlReal_" + str("a") + "_x_" + str(targetPosition[0]) + '_y_' + str(
+                    plt.subplot(3, 1, 2)
+                    plt.grid(True)
+                    plt.plot(logTime, logPosY, label="simPosY")
+                    plt.plot(logTime, reflogPosY, label="refPosY")
+                    plt.legend()
+                    break
+                elif controlParam == "refOrientation":
+                    plt.subplot(1, 1, 3)
+                    plt.grid(True)
+                    plt.plot(logTime, logAngle, label="simAngle")
+                    plt.plot(logTime, reflogAngle, label="refAngle")
+                    plt.legend()
+                    break
+
+            name = "\controlReal_" + str("b") + "_x_" + str(targetPosition[0]) + '_y_' + str(
                 targetPosition[1]) + 'maxTime_' + str(round(logTime[len(logTime) - 1], 2)) + 'refAngle_' + str(
                 reflogAngle[0]) + '.png'
             path = os.getcwd() + "\\plots" + name

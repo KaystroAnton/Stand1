@@ -2,7 +2,7 @@ import numpy as  np
 import cv2 as cv
 import os
 
-accuracyAnge = 5
+accuracyAnge = 10
 accuracyCoor = 20
 simStoppingAngel = 20
 integrateRegulatorSumL = 0
@@ -78,9 +78,7 @@ def realposControler(refPosition,robotPosision,roborOriantation):
     else:
         return [";0,0/:", True]
 
-def orientControlSetedLinSpeed(refOrientation, robotOrientation,linspeed = 60,L=0.23,kProp = 0.8):
-    a = angle180(refOrientation - robotOrientation)
-    b= 2 / 3
+def orientControlSetedLinSpeed(refOrientation, robotOrientation,linspeed = 60,L=0.23,kProp = 1.5):
     turn = (angle180(refOrientation - robotOrientation) / L)
     if turn >= 100 - linspeed:
         turn = 100 - linspeed
@@ -88,7 +86,15 @@ def orientControlSetedLinSpeed(refOrientation, robotOrientation,linspeed = 60,L=
         turn = -100 + linspeed
     motorL =  kProp * (linspeed - turn)
     motorR =  kProp * (linspeed + turn)
-    return [[motorL,motorR],False]
+    if motorL<=60 and  motorL>=0:
+        motorL = 60
+    elif motorL>=-60 and  motorL<0:
+        motorL = -60
+    if motorR <= 60 and motorR >= 0:
+        motorR = 60
+    elif motorR >= -60 and motorR < 0:
+        motorR = -60
+    return [[motrorScale(motorL),motrorScale(motorR)],False]
 
 def realorientControlSetedLinSpeed(refOrientation, robotOrientation,linspeed = 60,L=0.23,kProp = 0.8):
     turn = (angle180(refOrientation - robotOrientation) / L)
