@@ -1,7 +1,7 @@
 import test
 import Constants
 flag = "Simulation"
-# = "Real"
+#flag = "Real"
 for control in (Constants.controlFuncAndParamList):
     test1 = test.Test(flag,controlFuncAndParam= control)
     test1.run()
