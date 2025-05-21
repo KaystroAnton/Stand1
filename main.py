@@ -7,4 +7,4 @@ for control in range(3):
                       controlFuncAndParam= Constants.controlFuncAndParamList[2],numberOfTests = 1)
     test1.run()
 # for info use __docs__
-#print(test.createParamListOfControl.__doc__)
+#print(test1.createParamListOfControl.__doc__)
