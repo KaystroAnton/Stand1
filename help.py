@@ -47,7 +47,7 @@ def posAndOrientControl(refPosition,refOrientation,robotPosision,robotOriantatio
         gamma = -90
     elif gamma >=90:
         gamma = 90
-    print("betta - gamma ", betta - gamma)
+    print("betta + gamma ", betta + gamma)
     print(gamma)
     xRef = robotPosision[0] +np.sqrt(pow(refPosition[0]-robotPosision[0],2) + pow(refPosition[1]-robotPosision[1],2))* np.cos((betta +gamma)*np.pi/180)
     yRef = robotPosision[1] +np.sqrt(pow(refPosition[0]-robotPosision[0],2) + pow(refPosition[1]-robotPosision[1],2))* np.sin((betta +gamma)*np.pi/180)
